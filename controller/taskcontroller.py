@@ -19,7 +19,7 @@ def index():
 @taskcontroller.route('/create', methods=['POST'])
 def create():
     try:
-        name = request.form.get('title', 'default')
+        name = request.form.get('name', 'default')
         slug = request.form.get('slug')
         taskva = TaskValidation()
         taskva.load({
@@ -27,11 +27,11 @@ def create():
             'slug': slug,
         })
         # check slug nếu có thì ko tạo
-        check_slug = db.tasks.find({'description': slug})
-        for check in check_slug:
-            print(check['title'])
+        # check_slug = db.tasks.find({'slug': slug})
+        check_slug = db.tasks.count_documents({'slug': slug})
+        print(check_slug)
         # kiểm tra đã có data thì không cho import tiếp
-        if check_slug:
+        if (check_slug > 0):
             return json.dumps({'stautus': 0, 'message': 'đã có'}, ensure_ascii=False).encode('utf-8')
         task_data = Task(name, slug, 1)
         result = db.tasks.insert_one(task_data.json())

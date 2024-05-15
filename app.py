@@ -13,21 +13,23 @@ app = Flask(__name__)
 
 app.config['JSON_AS_ASCII'] = False
 app.config['CACHE_TYPE'] = 'SimpleCache'
+app.config['UPLOAD_FOLDER'] = './uploads'
+
 cache = Cache(app)
 
 app.register_blueprint(post, url_prefix='/post')
 app.register_blueprint(taskcontroller, url_prefix='/task')
 
-# @app.before_request
-# def before_request():
-#     # thêm bảo mật với api key
-#     token = request.headers.get('token')
-#     check = checkheader.check_headers(token)
-#     if (check == False):
-#         return json.dumps({
-#             'status': 0,
-#             'message': 'Invalid token',
-#         })
+@app.before_request
+def before_request():
+    # thêm bảo mật với api key
+    token = request.headers.get('token')
+    check = checkheader.check_headers(token)
+    if (check == False):
+        return json.dumps({
+            'status': 0,
+            'message': 'Invalid token',
+        })
 
 
 @app.route('/', methods=['GET'])
